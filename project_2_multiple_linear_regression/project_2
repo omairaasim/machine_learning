@@ -1,0 +1,214 @@
+In project 2 of Machine Learning, I'm going to be looking at Multiple Linear Regression. Unlike Simple Linear Regression where there is one independent variable and one dependent variable - in Multiple Linear Regression there are several independent variables that could have an effect on determining the dependent variable.
+
+I'll be using the example from the A-Z Machine learning course from Udemy.
+
+Let's dive right in.
+
+Dataset
+The dataset we will be using for this project can be found here**.
+It contains data about 50 startups
+It has 5 columns - "R&D Spend", "Administration", "Marketing Spend", "State", "Profit"
+The first 3 columns indicate how much each startup spends on Research and Development, how much they spend on Marketing and how much they spend on Administration cost.
+The state column indicates which state the startup is based in. And the last column states the profit made by the start up.
+
+Project Objective
+We want our model to predict the profit based on the independent variables described above. So Profit is the dependent variable and the other 4 are independent variables.
+
+Step 1: Load the Dataset
+
+Below is the code snippet for loading the dataset. 
+We will be using the pandas dataframe.
+Here X is contains all the independent variable which are "R&D Spend", "Administration", "Marketing Spend" and "State"
+and y is the dependent variable which is the "Profit"
+
+So for X, we specify dataset.iloc[:, :-1].values
+which simply means take all rows and all columns except last one
+
+And for y, we specify dataset.iloc[:, 4].values
+which simply means take all rows and only columns with index 4 - In python indexes begin at 0 - so index 4 here is the fifth column which is "Profit"
+
+# Step 1 - Load Data
+import pandas as pd
+dataset = pd.read_csv("50_Startups.csv")
+X = dataset.iloc[:,:-1].values
+y = dataset.iloc[:,4].values
+
+***************************************************
+
+Step 2: Convert text variable to numbers
+We can see that in our dataset we have a categorical variable which is "State" which we have to encode.
+Here the "State" variable is at index 3
+We use LabelEncoder class to convert text to numbers
+
+# Step 2 - Convert text variable "State" to numbers
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelEncoder_X = LabelEncoder()
+X[:,3] = labelEncoder_X.fit_transform(X[:,3])
+
+Once we run the above code snippet - we will see that all States have been converted to numbers
+For example New York has been converted to 2, California to 0 and Florida to 1
+
+****************************************************
+
+Step 3: Use OneHotEncoder to introduce Dummy variables
+If we leave the dataset in the above state, it will not be right. Because New York has been assigned a value 2 and California has been assigned 0. So the model might assume New York is higher than California which is not right.
+
+So to avoid this we have to introduce dummy variables using OneHotEncoder as shown below
+
+# Step 3 - Use OneHotEncoder to introduce dummy variables
+oneHotEncoder = OneHotEncoder(categorical_features=[3])
+X = oneHotEncoder.fit_transform(X).toarray()
+
+After running the above code snippet - lets examine the dataset - we can see that 3 dummy variables have been added as we had 3 different States.
+
+Lets compare the X dataset with the original dataset.
+- Lets looks at the first entry at index 0 - In original dataset the state was "New York" - and after encoding the 3rd dummy variable has the value 1 which means the 3rd dummy variable represents the state New York
+- Lets looks at the second entry at index 1 - In original dataset the state was "California" - and after encoding the 1st dummy variable has the value 1 which means the 1st dummy variable represents the state California
+- Lets looks at the third entry at index 2 - In original dataset the state was "Florida" - and after encoding the 2nd dummy variable has the value 1 which means the 2nd dummy variable represents the state Florida
+
+
+Step 4: Dummy Variable Trap
+We have to remove one of the dummy variables. You can read about the dummy variable trap and why we need to remove one of the dummy variables.
+In the below code snippet - we are removing the first column.
+
+# Step 4 - Dummy Trap
+X = X[:,1:]
+
+
+Step 5: Split dataset into training set and test set
+
+Next we have to split the dataset into training and testing. We will use the training dataset for training the model and then check the performance of the model on the test dataset.
+
+For this we will use the train_test_split method from library model_selection
+We are providing a test_size of 0.2 which means test set will contain 10 observations and training set will contain 40 observations
+The random_state=0 is required only if you want to compare your results with mine.
+
+# Step 5 - Split Data
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=0.2, random_state=0)
+
+Below is the sample screenshot of X_train, y_train, X_test and y_test
+
+Step 6: Fit Simple Linear Regression model to training set
+This is a very simple step. We will be using the LinearRegression class from the library sklearn.linear_model. First we create an object of the LinearRegression class and call the fit method passing the X_train and y_train. 
+
+# Step 6 - Fit Regressor
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+Step 7: Predict the test set
+Using the regressor we trained in the previous step, we will now use it to predict the results of the test set and compare the predicted values with the actual values
+
+# Step 7 - Predict
+y_pred = regressor.predict(X_test)
+
+Now we have the y_pred which are the predicted values from our Model and y_test which are the actual values. 
+Let us compare are see how well our model did. As you can see from the screenshot below - our basic model did pretty well.
+
+If we take the first startup - the actual profit is 103282 and our model predicted 103015 - which is almost perfect. There are some predictions that are off like the second startup -  the actual profit is 144259 and our model predicted 132582.
+
+Step 8: Backward Elimination
+In the model that we just built, we used all the independent variables but its possible that some independent variables are more significant than others and have a greater impact on the profit and some are not significant meaning if we remove them from the model - we may get better predictions.
+
+So we are going to use backward elimination process to see which independent variables we must include in the model and which to exclude.
+
+The first step is for us to add a column of 1's to our X dataset as the first column. We add this column of ones to develop the y-intercept.
+This column corresponds to x0=1 associated to this constant b0 in the multiple linear regression equation 
+y = b0 + b1 * x1 + b2 * x2 + bn * xn
+
+# Add ones
+import numpy as np
+ones = np.ones(shape = (50,1), dtype=int)
+X = np.append(arr = ones, values= X, axis=1)
+
+Now we will start the backward elimination process. Since we will be creating a new optimal matrix of features - we will call it X_opt. This will contain only the independent features that are significant in predicting profit.
+
+To begin with, we will include all independent variables in X_opt
+X_opt = X[:,[0,1,2,3,4,5]]
+
+Next we need to select a significance level (SL) - here we decode on significance level of 0.05. So if the p value of the independent variable is greater than SL, we will remove that independent variable and repeat the process with the remaining independent variables.
+
+Next we create a new regressor of the OLS class (Ordinary Least Square) from statsmodel library. 
+It takes 2 arguments
+- endog : which is the dependent variable
+- exog : which is the matrix containing all independent variables
+
+Now we need to fit the OLS algorithm as shown below:
+
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+
+Then we will look at the summary to see which independent variable has p value higher than SL (0.05)
+
+regressor_OLS.summary()
+
+Below all the steps are outlined
+
+# Backward Elimination
+import statsmodels.formula.api as sm
+X_opt = X[:,[0,1,2,3,4,5]]
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+Here is the screenshot of the summary
+
+
+Lets examine the output
+x1 and x2 are the 2 dummy variables we added for state
+x3 is R&D spent
+x4 is Admin spent
+x5 is marketing spent
+
+We have to look for the highest P value greater than 0.5 which in this case is 0.99 (99%) for x2
+So we have to remove x2 (2nd dummy variable for state) which has index 2 
+
+X_opt = X[:,[0,1,3,4,5]]
+
+Now lets repeat the process after removing the independent variable with highest p value
+
+X_opt = X[:,[0,1,3,4,5]]
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+Here is the screenshot of the summary
+
+Lets examine the output. We have to look for the highest P value greater than 0.5 which in this case is 0.94 (94%) for x1
+So we have to remove x1 (1st dummy variable for state) which has index 1 
+
+X_opt = X[:,[0,3,4,5]]
+
+Now lets repeat the process after removing the independent variable with highest p value
+
+X_opt = X[:,[0,3,4,5]]
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+Here is the screenshot of the summary
+
+Lets examine the output. We have to again look for the highest P value greater than 0.5 which in this case is 0.602 (60%) for x2
+So we have to remove x2 (Admin spent) which has index 4
+
+X_opt = X[:,[0,3,5]]
+
+Now lets repeat the process after removing the independent variable with highest p value
+
+X_opt = X[:,[0,3,5]]
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+Here is the screenshot of the summary
+
+Lets examine the output. We have to again look for the highest P value greater than 0.5 which in this case is 0.06 (6%) for x2
+So we have to remove x2 (Marketing spent) which has index 5 in X_opt
+
+X_opt = X[:,[0,3]]
+
+Now lets repeat the process after removing the independent variable with highest p value
+
+X_opt = X[:,[0,3]]
+regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
+regressor_OLS.summary()
+
+Finally we are left with only 1 independent variable which is the R&D spent.
+
+So we can build our model again but this time taking only 1 independent variable which is the R&D spent and do the prediction and our results will be better than the first time.

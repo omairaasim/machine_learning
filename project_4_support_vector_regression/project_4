@@ -1,0 +1,101 @@
+
+Today I'll be looking at the Support Vector Regression (SVR) example from the A-Z Machine Learning course on Udemy.
+
+#100DaysOfMLCode #100ProjectsInML
+
+We will be working on the same problem that we worked on Project 3. Here instead of using Polynomial Regression, we will use Support Vector Regression and see whether the prediction is better or worse compared to Polynomial Regression.
+
+Lets explore the dataset.
+
+Dataset
+First lets look at the dataset. It is Position_Salaries.csv and can be found here
+It has 3 columns - "Position", "Level" and "Salary" and describes the approximate salary range for an employee based on what level he falls under.
+
+For example if an employee is a Manager - he falls in Level 4 and should get around $80,000.
+
+Below is the screenshot of the dataset.
+
+Project Objective
+
+Lets assume the above table is what the HR team of a company uses to determine what salary to offer to a new employee. For our project, let's take an example that an employee has applied for the role of a Regional Manager and has already worked as a Regional Manager for 2 years. So based on the table above - he falls between level 6 and level 7 - Lets say he falls under level 6.5
+
+We want to build a model to predict what salary we should offer this new employee.
+
+Let's get started.
+
+Step 1: Load the Dataset
+
+If we look at the dataset, we need to predict the salary for an employee who falls under Level 6.5 - So we really do not need the first column "Position".
+
+Here X is the independent variable which is the "Level"
+and y is the dependent variable which is the "Salary"
+
+So for X, we specify 
+
+X = dataset.iloc[:, 1:2].values
+
+which simply means take all rows and all columns from index 1 upto index 2 but not including index 2 (upper bound range is not included)
+
+And for y, we specify 
+
+y = dataset.iloc[:, 2:].values
+
+which simply means take all rows and only columns with index 2 which is Salary
+
+# Step 1 - Load Data
+import pandas as pd
+dataset = pd.read_csv("Position_Salaries.csv")
+X = dataset.iloc[: ,1:2].values
+y = dataset.iloc[:, 2:].values
+
+
+Step 2 - Feature Scaling
+
+# Step 2 - Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+sc_y = StandardScaler()
+X = sc_X.fit_transform(X)
+y = sc_y.fit_transform(y)
+
+
+Step 3 - Fit SVR
+
+We will be using the SVR class from the library sklearn.svm. First we create an object of the SVR class and pass kernel parameter as "rbf" (Radial Basis Function) and then call the fit method passing the X and y.
+
+# Step 3 - Fit SVR
+from sklearn.svm import SVR
+regressor = SVR(kernel = "rbf")
+regressor.fit(X,y)
+
+
+Step 4 - Visualization
+
+# Step 4 - Visualization
+import matplotlib.pyplot as plt
+plt.scatter(X, y , color="red")
+plt.plot(X, regressor.predict(X), color="blue")
+plt.title("SVR")
+plt.xlabel("Position")
+plt.ylabel("Salary")
+plt.show()
+
+Step 5 - Make Predictions
+
+Since we want to predict the salary for an employee at level 6.5 - first we will have to do feature scaling to transform value 6.5
+Then we have to do the prediction
+Finally since the predicted value is already scaled, we have to do inverse transformation to get the actual value
+These steps are outlined below. 
+
+
+# Step 5 - Predictions
+import numpy as np
+# First transform 6.5 to feature scaling
+sc_X_val = sc_X.transform(np.array([[6.5]]))
+# Second predict the value
+scaled_y_pred = regressor.predict(sc_X_val)
+# Third - since this is scaled - we have to inverse transform
+y_pred = sc_y.inverse_transform(scaled_y_pred) 
+
+
+We can see that the predicted value is $170k and in Polynomial Regression we got $158k

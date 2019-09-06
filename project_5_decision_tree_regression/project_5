@@ -1,0 +1,101 @@
+Today we will be looking at the one of the most popular regression models called Decision Tree.
+
+#100DaysOfMLCode #100ProjectsInML
+
+I will be solving the same problem about predicting salary of a new employee based on his position level.
+
+I have solved the same problem in project 3 using Polynomial Regression - You can check it out here.
+And the same problem has been solved in project 4 using Support Vector Regression - You can check that project here.
+
+Let's understand Decision Trees.
+
+Decision tree regression model is Non Linear and a Non continuous model.
+
+Below is a scatter plot which represents our dataset. It has 2 independent variables X1 and X2 and what we are trying to predict is a 3rd dependent variable y. 
+
+Insert image 
+
+Now once we run the decision tree algorithm, the scatter plot will be split up into segments. Each one of these splits is called a leaf. The way the splits are made is based on the principle of information entropy. It is a mathematical concept and is quite complex. If you want to learn more about that - you can read up on the concept of information entropy. 
+
+
+Let's walk through an example scenario so we understand how decision tree's work. Let's say the algorithm makes the first split at X1 = 20 - so the scatter plot is divided into 2 segments - first segment is when X1 < 20 and second segment is when X1 > 20.
+
+Insert image
+
+Insert image
+
+
+Now let's say split 2 happens at X2 = 170 - but it only happens to points where X1 > 20
+
+Insert image
+
+Insert image
+
+Next, split 3 happens at X2 = 200 - but it happens to points X1 < 20
+
+Insert image
+
+Insert image
+
+
+Finally, split 4 happens at X1 = 40 - but it applies to points where X1 > 20 and X2 < 170
+
+Insert image
+
+So now our decision tree is done. 
+
+Now how do we determine the value of a new data point. It's very simple - we take the average of each of our terminal leaves. The diagram below shows an example of average for each of the terminal leaves.
+
+Insert image
+
+Now lets say we have a new data point where X1 = 30 and X2 = 50, it falls in the leaf whose average is -64.1 - so the decision tree algorithm will predict the value of y as -64.1. From the below diagram, we can see how it arrives at that value.
+
+Insert image
+
+
+Dataset
+First lets look at the dataset. It is Position_Salaries.csv and can be found here
+It has 3 columns - "Position", "Level" and "Salary" and describes the approximate salary range for an employee based on what level he falls under.
+
+For example if an employee is a Manager - he falls in Level 4 and should get around $80,000.
+
+Below is the screenshot of the dataset.
+
+Project Objective
+
+Lets assume the above table is what the HR team of a company uses to determine what salary to offer to a new employee. For our project, let's take an example that an employee has applied for the role of a Regional Manager and has already worked as a Regional Manager for 2 years. So based on the table above - he falls between level 6 and level 7 - Lets say he falls under level 6.5
+
+We want to build a model to predict what salary we should offer this new employee.
+
+Let's get started.
+
+
+Step 1: Load the Dataset
+
+If we look at the dataset, we need to predict the salary for an employee who falls under Level 6.5 - So we really do not need the first column "Position".
+
+Here X is the independent variable which is the "Level"
+and y is the dependent variable which is the "Salary"
+
+So for X, we specify 
+
+X = dataset.iloc[:, 1:2].values
+
+which simply means take all rows and all columns from index 1 upto index 2 but not including index 2 (upper bound range is not included)
+
+And for y, we specify 
+
+dataset.iloc[:, 2].values
+
+which simply means take all rows and only columns with index 2 - In python indexes begin at 0 - so index 2 here is the second column which is Salary
+
+Step 2 - Fit Decision Tree Regressor
+
+We will be using the DecisionTreeRegressor class from the library sklearn.tree. First we create an object of the DecisionTreeRegressor class and pass criterion parameter as "mse" (Mean Squared Error) and then call the fit method passing the X and y.
+
+Step 3 - Visualize
+Let's plot the graph to look at the results for Decision Tree Regression. For Decision Trees we have to use continuous points.
+
+Step 4: Predict Decision Tree Regression Results
+
+We get a prediction of $150k

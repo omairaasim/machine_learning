@@ -1,0 +1,134 @@
+Today I will be writing about Random Forest Regression Model. Random Forest is a version of Ensemble Learning. Ensemble learning in simple terms is when you take a sample algorithm multiple times and you put them together to make it more powerful than the original version. Unlike Decision Tree model where we built a Decision Tree to predict the value for a new data point - In Random Forest we build many Decision Trees - (typical default is 500 trees).
+
+So instead of getting 1 prediction, in Random Forest we get many predictions for y (say 500 trees give out 500 predictions). We then take the average of all the predictions to assign that to y.
+
+#100DaysOfMLCode #100ProjectsInML
+
+I have solved the same problem in project 3 using Polynomial Regression - You can check it out here.
+We then solved it Support Vector Regression - You can check that project here.
+And in the last project, we used Decision Tree Regression - Its available here.
+
+Today, we will use Random Forest model and see how good our prediction is.
+
+Dataset
+
+First lets look at the dataset. It is Position_Salaries.csv and can be found here
+It has 3 columns - "Position", "Level" and "Salary" and describes the approximate salary range for an employee based on what level he falls under.
+
+For example if an employee is a Manager - he falls in Level 4 and should get around $80,000.
+
+Below is the screenshot of the dataset.
+
+
+Project Objective
+
+Lets assume the above table is what the HR team of a company uses to determine what salary to offer to a new employee. For our project, let's take an example that an employee has applied for the role of a Regional Manager and has already worked as a Regional Manager for 2 years. So based on the table above - he falls between level 6 and level 7 - Lets say he falls under level 6.5
+
+We want to build a model to predict what salary we should offer this new employee.
+
+Let's get started.
+
+Step 1: Load the Dataset
+
+If we look at the dataset, we need to predict the salary for an employee who falls under Level 6.5 - So we really do not need the first column "Position".
+
+Here X is the independent variable which is the "Level"
+and y is the dependent variable which is the "Salary"
+
+So for X, we specify 
+
+X = dataset.iloc[:, 1:2].values
+
+which simply means take all rows and all columns from index 1 upto index 2 but not including index 2 (upper bound range is not included)
+
+And for y, we specify 
+
+dataset.iloc[:, 2].values
+
+which simply means take all rows and only columns with index 2 - In python indexes begin at 0 - so index 2 here is the second column which is Salary
+
+# Step 1 - Load Data
+import pandas as pd
+dataset = pd.read_csv("Position_Salaries.csv")
+X = dataset.iloc[:, 1:2].values
+y = dataset.iloc[:, 2].values
+
+Step 2 - Fit Random Forest Regressor
+
+We will be using the RandomForestRegressor class from the library sklearn.ensemble. First we create an object of the RandomForestRegressor class. 
+
+When initializing the class, we need to specify the number of trees. So we pass the parameter n_estimators which specifies the number of trees we want to use. The second parameter of random_state = 0 is just so that our results match.  We then call the fit method passing the X and y.
+
+First lets run by setting n_estimators as 10 trees
+
+# Step 2 - Fit Regressor
+from sklearn.ensemble import RandomForestRegressor
+regressor = RandomForestRegressor(n_estimators=10, random_state=0)
+regressor.fit(X, y)
+
+Step 3 - Visualize
+Let's plot the graph to look at the results for Random Forest Regression. For Random Forest also we have to use continuous points.
+
+# Step 3 - Visualize
+import matplotlib.pyplot as plt
+import numpy as np
+X_grid = np.arange(min(X), max(X), 0.01)
+X_grid = X_grid.reshape((len(X_grid),1))
+
+plt.scatter(X, y, color="red")
+plt.plot(X_grid, regressor.predict(X_grid), color="blue")
+plt.title("Random Forest Regressor - 10 Trees")
+plt.xlabel("Position")
+plt.ylabel("Salaries")
+plt.show()
+
+Step 4: Predict Random Forest Regression Results
+
+We get a prediction of $167k
+
+# Step 4 - Predict
+regressor.predict([[6.5]])
+
+Step 5: Increase number of tree's to 100
+
+regressor = RandomForestRegressor(n_estimators=100, random_state=0)
+regressor.fit(X, y)
+
+import numpy as np
+X_grid = np.arange(min(X), max(X), 0.01)
+X_grid = X_grid.reshape((len(X_grid),1))
+plt.scatter(X, y, color="red")
+plt.plot(X_grid, regressor.predict(X_grid), color="blue")
+plt.title("Random Forest Regressor - 100 Trees")
+plt.xlabel("Position")
+plt.ylabel("Salaries")
+plt.show()
+
+regressor.predict([[6.5]])
+
+We get a prediction of $158k
+
+Step 6: Increase number of tree's to 300
+
+regressor = RandomForestRegressor(n_estimators=300, random_state=0)
+regressor.fit(X, y)
+
+import numpy as np
+X_grid = np.arange(min(X), max(X), 0.01)
+X_grid = X_grid.reshape((len(X_grid),1))
+plt.scatter(X, y, color="red")
+plt.plot(X_grid, regressor.predict(X_grid), color="blue")
+plt.title("Random Forest Regressor - 300 Trees")
+plt.xlabel("Position")
+plt.ylabel("Salaries")
+plt.show()
+
+regressor.predict([[6.5]])
+
+We get a prediction of $160k
+
+So to compare our results with previous regression models
+Polynomial Regression gave a prediction of $158k
+Support Vector Regression gave a prediction of $170k
+Decision Tree Regression gave a prediction of $150k
+Random Forest Regression with 300 trees gave a prediction of $160k
