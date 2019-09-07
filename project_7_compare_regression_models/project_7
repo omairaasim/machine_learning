@@ -1,0 +1,148 @@
+In the last 6 articles, I've covered some of the most popular form of regression models
+- Simple Linear Regression
+- Multiple Linear Regression
+- Polynomial Regression
+- Support Vector Regression
+- Decision Tree Regression
+- Random Forest Regression
+
+#100DaysOfMLCode #100ProjectsInML
+
+The articles are for absolute beginners and have been presented in the most simplest form. In programmaing terms - they are like the "Hello World" examples of different types of Regressions. The intent is to get the developers acquainted with the high level concept of Regression and in the process get their hands dirty by implementing a very simple project.
+
+In reality, building the model and making a prediction are the most simplest steps. All it involves is just 3 lines of code
+- Create an object of the Regression class.
+- Call the fit method.
+- Call the predict method.
+
+But if it was this simple - every other person would be a Data Scientist. Apparently bulk of the work involves exploring and understanding the data, cleaning up the data, imputing missing values. Basically understanding and preparing the data is most of the work. 
+
+In the upcoming projects on Regression, I will be implementing some end to end projects which will include all the steps mentioned above.
+
+For now - let's recapture the different types of Regression models that we built and see which model gives us the best prediction.
+
+Dataset
+
+First lets look at the dataset. It is Position_Salaries.csv and can be found here
+It has 3 columns - "Position", "Level" and "Salary" and describes the approximate salary range for an employee based on what level he falls under.
+
+For example if an employee is a Manager - he falls in Level 4 and should get around $80,000.
+
+Below is the screenshot of the dataset.
+
+Project Objective
+
+A company "XYZ" uses the dataset above to determine what salary to offer a new employee. Let's say an employee has applied for the role of a Regional Manager and has already worked as a Regional Manager for past 2 years. So based on the table above - he falls between level 6 and level 7.
+
+The new employee is saying he is currently withdrawing a salary of $160,000.
+
+We want to build a model to predict if he is saying the truth or not.
+
+Let's get started.
+
+Step 1: Load the Dataset
+
+If we look at the dataset, we need to predict the salary for an employee who falls between Level 6 and 7 - So we really do not need the first column "Position".
+
+Here X is the independent variable which is the "Level"
+and y is the dependent variable which is the "Salary"
+
+# Step 1 - Load Data
+import pandas as pd
+dataset = pd.read_csv("Position_Salaries.csv")
+X = dataset.iloc[:, 1:2].values
+y = dataset.iloc[:, 2].values
+
+Step 2: Apply Linear Regression Model and make prediction
+
+###########################
+### Linear Regression ###
+###########################
+from sklearn.linear_model import LinearRegression
+linear_regressor = LinearRegression()
+linear_regressor.fit(X, y)
+
+# Predict
+lin_pred = linear_regressor.predict([[6.5]])
+
+Step 3: Apply Polynomial Regression Model and make prediction
+
+################################
+### Polynomial Regression ###
+################################
+
+# ** NOTE - conver X to X_poly of required degree
+from sklearn.preprocessing import PolynomialFeatures
+poly_features = PolynomialFeatures(degree=4)
+X_poly = poly_features.fit_transform(X)
+
+from sklearn.linear_model import LinearRegression
+poly_regressor = LinearRegression()
+poly_regressor.fit(X_poly, y)
+
+# Predict - have to convert 6.5 to poly format
+poly_pred = poly_regressor.predict(poly_features.fit_transform([[6.5]]))
+
+
+Step 4: Apply Support Vector Regression Model and make prediction
+
+################################
+### SVR Regression ###
+################################
+
+# ** NOTE - SVR does not do feature scaling
+from sklearn.preprocessing import StandardScaler
+ss_x = StandardScaler()
+ss_y = StandardScaler()
+X_scaled = ss_x.fit_transform(X)
+y_scaled = ss_y.fit_transform(y.reshape(-1,1))
+
+from sklearn.svm import SVR
+svr_regressor = SVR(kernel="rbf")
+svr_regressor.fit(X_scaled, y_scaled)
+
+# Predict - since we did feature scaling - so have to scale/transform 6.5 also
+position_val = ss_x.transform([[6.5]])
+
+# Predict
+pred_val_scaled = svr_regressor.predict(position_val)
+
+# The above statement will return scaled predicted value - so have to convert that using inverse transform
+svr_pred = ss_y.inverse_transform(pred_val_scaled)
+
+Step 5: Apply Decision Tree Regression Model and make prediction
+
+################################
+### Decision Tree Regression ###
+################################
+from sklearn.tree import DecisionTreeRegressor
+tree_regressor = DecisionTreeRegressor(criterion="mse")
+tree_regressor.fit(X, y)
+
+# Predict
+tree_pred = tree_regressor.predict([[6.5]])
+
+
+Step 6: Apply Random Forest Regression Model and make prediction
+
+################################
+### Random Forest Regression ###
+################################
+from sklearn.ensemble import RandomForestRegressor
+forest_regressor = RandomForestRegressor(n_estimators=300, random_state=0)
+forest_regressor.fit(X, y)
+
+# Predict
+forest_pred = forest_regressor.predict([[6.5]])
+
+Step 7: Compare Prediction Results
+
+The table below shows the prediction results obtained from different regression models we tried above.
+
+Step 8: Conclusion
+
+According to the problem statement, we know that the new employee is saying he is currently making $160k.
+
+Now based on the models that we ran, we can see from the table above that Polynomial Regression and Random Forest have made pretty accurate predictions. So we can conclude that the new employee is saying the truth.
+
+
