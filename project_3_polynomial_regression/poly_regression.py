@@ -49,4 +49,5 @@ plt.show()
 
 
 # Step 8 Polynomial Regression prediction
-lin_reg_2.predict(poly_reg.fit_transform([[6.5]]))
+new_salary_pred = lin_reg_2.predict(poly_reg.fit_transform([[6.5]]))
+print('The predicted salary of a person at 6.5 Level is ',new_salary_pred)
