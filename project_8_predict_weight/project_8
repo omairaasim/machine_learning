@@ -1,0 +1,72 @@
+I thought of working on a Kaggle dataset today but at the same time I was looking for a very simple project. I came across this dataset that list the height and weight of people. You can check it out here.
+
+We will go over some more complex and large datasets in the upcoming projects. But in this project - I will introduce two new topics - "Check for null values" and "Evaluate Regression Model"
+
+So in this project, we have to train our model on this data and then make a new weight prediction of the person given his height.
+
+#100DaysOfMLCode #100ProjectsInML
+
+Let's get started.
+
+Step 1 - Load Dataset
+First we will load the dataset. The file is Height_Weight_single_variable_data_101_series_1.0.csv.
+
+# Step 1 : Load Dataset 
+import pandas as pd
+dataset = pd.read_csv("Height_Weight_single_variable_data_101_series_1.0.csv")
+X = dataset.iloc[:, :-1].values
+y = dataset.iloc[:, 1].values
+
+Step 2 - Check for missing values
+It is one of the most important steps in data preparation. We have to see if the dataset has any missing values and then figure out the best possible way to impute the missing values.
+
+# Step 2: Check for missing values
+dataset.isnull().sum()
+
+As we can see, it shows there are 0 missing values in height and weight column. So there is nothing to be done here.
+
+Step 3 - Split dataset into training set and test set
+
+There are 35 entries in the dataset. Lets take 20% of data as test data.
+
+# Step 3: Split dataset into train and test
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+Step 4 - Fit Regression Model
+
+We will first fit the Regression Model and see how good it fits the data. If the performance is not good - then we can experiment with other Regression Models.
+
+# Step 4: Fit Linear Regression Model
+from sklearn.linear_model import LinearRegression
+lin_reg = LinearRegression()
+lin_reg.fit(X_train, y_train)
+
+Step 5 - Predict test set values
+
+Now that the Linear Regression model is trained, let's predict the X_test values.
+
+# Step 5: Predict values for test data
+lin_pred = lin_reg.predict(X_test)
+
+Step 6 - Evaluate performance of the Model
+
+We can see from the image below that the predicted values are very close to the real values.
+
+IMAGE y_test, y_pred
+
+After we fit the model, we have to evaluate how well the model fits the data. For this purpose, we will look at "R squared" and Mean Squared Error.
+
+- "R Squared": This value is between 0 and 1 ie between 0% and 100%. Generally speaking, in most cases - the closer it is to 1 - the better - 1 means perfect correlation. 
+
+Wikipedia defines it as
+R squared is the proportion of the variance in the dependent variable that is predictable from the independent variable(s)
+
+So if it is 100%, the two variables are perfectly correlated.
+
+- Mean Squared Error (MSE): This is the average of the square of errors. Error here implies the difference between the actual values and predicted values. We sqaure each difference. So if mean squared error is large, it means the error is large. The lower the value, the better the model. We can use the MSE value in selecting one model over the other.
+
+
+from sklearn import metrics
+print('R square = ',metrics.r2_score(y_test, lin_pred))
+print('Mean squared Error = ',metrics.mean_squared_error(y_test, lin_pred))
