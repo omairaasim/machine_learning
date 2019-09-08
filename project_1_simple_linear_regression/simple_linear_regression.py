@@ -47,3 +47,4 @@ plt.show()
 
 # Step 7 - Make new prediction
 new_salary_pred = regressor.predict([[15]])
+print('The predicted salary of a person with 15 years experience is ',new_salary_pred)
