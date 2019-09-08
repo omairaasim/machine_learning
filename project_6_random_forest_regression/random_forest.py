@@ -30,4 +30,5 @@ plt.ylabel("Salaries")
 plt.show()
 
 # Step 4 - Predict
-regressor.predict([[6.5]])
+y_pred = regressor.predict([[6.5]])
+print('The predicted salary of a person at 6.5 Level is ',y_pred)
