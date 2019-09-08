@@ -41,3 +41,4 @@ sc_X_val = sc_X.transform(np.array([[6.5]]))
 scaled_y_pred = regressor.predict(sc_X_val)
 # Third - since this is scaled - we have to inverse transform
 y_pred = sc_y.inverse_transform(scaled_y_pred) 
+print('The predicted salary of a person at 6.5 Level is ',y_pred)
