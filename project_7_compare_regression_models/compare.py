@@ -22,6 +22,7 @@ linear_regressor.fit(X, y)
 
 # Predict
 lin_pred = linear_regressor.predict([[6.5]])
+print('The predicted salary of a person at 6.5 Level with Linear Regression is ',lin_pred)
 
 ################################
 ### Polynomial Regression ###
@@ -38,6 +39,7 @@ poly_regressor.fit(X_poly, y)
 
 # Predict - have to convert 6.5 to poly format
 poly_pred = poly_regressor.predict(poly_features.fit_transform([[6.5]]))
+print('The predicted salary of a person at 6.5 Level with Polynomial Regression is ',poly_pred)
 
 ################################
 ### SVR Regression ###
@@ -62,6 +64,7 @@ pred_val_scaled = svr_regressor.predict(position_val)
 # The above statement will return scaled predicted value
 # So have to convert that using inverse transform
 svr_pred = ss_y.inverse_transform(pred_val_scaled)
+print('The predicted salary of a person at 6.5 Level with Support Vector Regression is ',svr_pred)
 
 ################################
 ### Decision Tree Regression ###
@@ -72,6 +75,7 @@ tree_regressor.fit(X, y)
 
 # Predict
 tree_pred = tree_regressor.predict([[6.5]])
+print('The predicted salary of a person at 6.5 Level with Decision Tree Regression is ',tree_pred)
 
 ################################
 ### Random Forest Regression ###
@@ -82,7 +86,7 @@ forest_regressor.fit(X, y)
 
 # Predict
 forest_pred = forest_regressor.predict([[6.5]])
-
+print('The predicted salary of a person at 6.5 Level with Random Forest Regression is ',forest_pred)
 
 
 ################################
