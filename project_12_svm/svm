@@ -1,0 +1,39 @@
+Machine Learning Project 12 - Using Support Vector Classification
+
+Below is the sample dataset - we have got points on a two dimensional space. We have some observations - some are red and some are green. So these points, we have already classified them. 
+
+img 1
+
+We will use SVM to draw a line that separates these 2 categories. For example - let us assume the line below is drawn by the SVM algorithm to separate the 2 categories and at the same time it has the maximum margin. By margin we mean, there will never be any data point inside the margin.
+You can read more about SVM and maximum margins in this great tutorial.
+
+This line is drawn equal distance from the red and green points.
+
+img 2
+
+
+These 2 points are called the support vectors.
+These 2 points are supporting the algorithm - even if you get rid of the other points - nothing will change. The algorithm will be exactly same. The other points do not contribute to the result of the algorithm. Only these 2 points highlighted contribute and hence are called the support vectors. 
+You can call them support points in a 2 dimensional space but in reality they are vectors because in a multidimensional space when you have more than 2 variables - maybe 10 or 50 variables - each point is no longer a point because we cannot visualize it in a two dimensional space and therefore each of those points is actually a vector in a multidimensional space.
+
+
+
+img 3
+
+
+The line in the middle is called the Maximum Margin Hyperplane in a multidimensional space or Maximum Margin Classifier in a two dimensional space.
+The green dotted line is called the positive hyperplane
+The red dotted line is called negative hyperplane. It does'nt matter in which order you name them - its just that one is positive and the other is negative.
+
+
+
+What is special about SVMs?
+
+Let's say you are building an algorithm to identify apple's and oranges. What most machine learning algorithms would do is they they would look at the most common looking types of apples and most common looking type of oranges to learn and train themselves. So based on that - they will identify new samples as either apple or orange.
+
+But in case of Support Vector Machine - instead of looking at most common types of apples and oranges - the SVM would look at apples that are very much like an orange and similarly oranges that resemble an apple. 
+
+If you look at the image below - the SVM would pick the apple on the left that looks very similar to an orange and would pick the the green orange on the right that looks very similar to a green apple. So these 2 points would represent the support vectors and are very close the boundary. So the SVM is a very different type of algorithm as it picks the extreme case which is close to the boundary and it uses that to construct its analysis. That's why in certain cases, the SVM performs better than other classification algorithms.
+
+
+
