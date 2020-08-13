@@ -13,12 +13,11 @@ X = dataset.iloc[:,:-1].values
 y = dataset.iloc[:,4].values
 
 # Step 2 - Encode Categorical Data
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
-labelEncoder_X = LabelEncoder()
-X[:,3] = labelEncoder_X.fit_transform(X[:,3])
-
-oneHotEncoder = OneHotEncoder(categorical_features=[3])
-X = oneHotEncoder.fit_transform(X).toarray()
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+import numpy as np
+ct = ColumnTransformer(transformers=[('encoder',OneHotEncoder(),[3])], remainder='passthrough')
+X = np.array(ct.fit_transform(X))
 
 # Step 3 - Dummy Trap
 X = X[:,1:]
@@ -34,30 +33,3 @@ regressor.fit(X_train, y_train)
 
 # Step 6 - Predict
 y_pred = regressor.predict(X_test)
-
-# Add ones
-import numpy as np
-ones = np.ones(shape = (50,1), dtype=int)
-X = np.append(arr = ones, values= X, axis=1)
-
-# Backward Elimination
-import statsmodels.formula.api as sm
-X_opt = X[:,[0,1,2,3,4,5]]
-regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
-regressor_OLS.summary()
-
-X_opt = X[:,[0,1,3,4,5]]
-regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
-regressor_OLS.summary()
-
-X_opt = X[:,[0,3,4,5]]
-regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
-regressor_OLS.summary()
-
-X_opt = X[:,[0,3,5]]
-regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
-regressor_OLS.summary()
-
-X_opt = X[:,[0,3]]
-regressor_OLS = sm.OLS(endog = y, exog=X_opt).fit()
-regressor_OLS.summary()
